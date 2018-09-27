@@ -1,0 +1,69 @@
+<div class="mine">
+    <ul>
+      <li>
+          <button  mat-fab (click)="save()" matTooltip="Save" matTooltipPosition="left"><i class="material-icons">save</i></button>
+      </li>
+      <li>
+          <button  mat-fab color="primary" (click)="addField()" matTooltip="Add field" matTooltipPosition="left"><i class="material-icons">add</i></button>
+      </li>
+    </ul>
+  </div>
+  <div class="container ">
+    <div class="row pt-3 ">
+      <div class="col-12 ">
+        <h2>Fields</h2>
+      </div>
+    </div>
+    <div class="row">
+      <table class="table" [formGroup]="myForm">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Required</th>
+            <th>Rules</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody formArrayName="fields">
+          <tr *ngFor="let field of myForm.controls.fields.controls; let j=index" [formGroupName]="j">
+            
+            <td width="250"><input type="text" class="form-control" formControlName="name"></td>
+            <td width="90"><mat-checkbox formControlName="required"></mat-checkbox></td>
+            <td formArrayName="rules">
+                <tr *ngFor="let rule of field.controls.rules.controls; let i=index" [formGroupName]="i">
+                  <td>
+                      <mat-form-field >
+                        <mat-select placeholder="Select rule" formControlName="name" [disabled]="rule.value.name.length>0">
+                          <mat-option *ngFor="let item of listRules" [value]="item.name" (click)="addArgument(j, i, rule.value.name, field.controls.rules.controls, rule)">
+                            {{ item.name }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                  </td>
+                  <td formArrayName="arguments" *ngIf="(rule.value.name!='accepted' && rule.value.name!='alpha' && rule.value.name!='apha_dash' && rule.value.name!='alpha_num' && rule.value.name!='unique' && rule.value.name!='email' && rule.value.name!='numeric') && (rule.value.name.length>0)">
+                      <div *ngFor="let argument of rule.controls.arguments.controls; let k = index;">
+                        <div [formGroupName]="k">
+                          <input *ngIf="rule.value.name=='after' || rule.value.name=='after_or_equal'" formControlName="date" class="form-control">
+                          <input *ngIf="rule.value.name=='between'" formControlName="min" class="form-control">
+                          <input *ngIf="rule.value.name=='between'" formControlName="max" class="form-control">
+                          <input *ngIf="rule.value.name=='min' || rule.value.name=='in'" formControlName="value" class="form-control">
+                        </div>
+                      </div> 
+                    
+                    <!-- <input type="text" class="form-control" formControlName="arguments"> -->
+                  </td>
+                  <td>
+                      <button mat-raised-button color="warn" (click)="removeRule(i)"><i class="material-icons">delete</i></button>
+                  </td>
+                </tr>
+            </td>
+            <td width="200">
+                <button mat-raised-button (click)="addRule(j)">Add rule</button>
+                <button mat-raised-button color="warn" (click)="removeField(i)"><i class="material-icons">delete</i></button>
+            </td>
+  
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
